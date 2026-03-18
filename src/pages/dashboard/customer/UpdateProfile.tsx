@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import customerService, { type Customer } from '../../../services/customerService';
 
 interface UpdateProfileProps {
@@ -14,6 +14,16 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ customer, onUpdateSuccess
   });
   const [loading, setLoading] = useState<boolean>(false);
 
+  useEffect(() => {
+    if (customer) {
+      setFormData({
+        mobileNumber: customer.mobileNumber || '',
+        age: customer.age || 0,
+        income: customer.income || 0,
+      });
+    }
+  }, [customer]);
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({
@@ -28,7 +38,6 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ customer, onUpdateSuccess
 
     setLoading(true);
     try {
-      // Calls: PUT /api/customers/{id}
       await customerService.updateCustomer(customer.userId, formData);
       alert("Profile updated successfully!");
       if (onUpdateSuccess) onUpdateSuccess();
@@ -41,9 +50,15 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ customer, onUpdateSuccess
 
   return (
     <div className="card shadow-sm border-0 p-4 bg-white">
-      <div className="d-flex align-items-center mb-4">
-        <i className="bi bi-person-gear text-primary fs-4 me-2"></i>
-        <h4 className="mb-0 fw-bold">Update KYC & Profile</h4>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <div className="d-flex align-items-center">
+          <i className="bi bi-person-badge text-primary fs-4 me-2"></i>
+          <h4 className="mb-0 fw-bold">Account Settings</h4>
+        </div>
+        {/* Simple Username Badge */}
+        <span className="badge bg-light text-primary border px-3 py-2">
+          <i className="bi bi-at"></i>{customer?.username || 'user'}
+        </span>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -56,8 +71,10 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ customer, onUpdateSuccess
               className="form-control" 
               value={formData.mobileNumber} 
               onChange={handleChange}
-              placeholder="Enter mobile number"
+              placeholder="e.g. 919876543210"
+              required
             />
+            <div className="form-text small">Used for WhatsApp OTP verification.</div>
           </div>
           
           <div className="col-md-6">
@@ -68,7 +85,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ customer, onUpdateSuccess
               className="form-control" 
               value={formData.age} 
               onChange={handleChange}
-              placeholder="e.g. 25"
+              min="18"
             />
           </div>
           
@@ -82,7 +99,6 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ customer, onUpdateSuccess
                 className="form-control" 
                 value={formData.income} 
                 onChange={handleChange}
-                placeholder="e.g. 50000"
               />
             </div>
           </div>
@@ -90,24 +106,14 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ customer, onUpdateSuccess
           <div className="col-12 mt-4">
             <button 
               type="submit" 
-              className="btn btn-dark w-100 py-2 fw-bold"
+              className="btn btn-primary w-100 py-2 fw-bold"
               disabled={loading || !customer}
             >
-              {loading ? (
-                <><span className="spinner-border spinner-border-sm me-2"></span>Saving...</>
-              ) : (
-                'Save Profile Changes'
-              )}
+              {loading ? 'Saving Changes...' : 'Update Profile'}
             </button>
           </div>
         </div>
       </form>
-      
-      {!customer && (
-        <div className="alert alert-warning mt-3 small">
-          Unable to load customer profile data. Please try again later.
-        </div>
-      )}
     </div>
   );
 };
