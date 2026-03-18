@@ -11,6 +11,15 @@ const accountService = {
     return response.data;
   },
 
+  // Updated: Use username instead of customerId
+  createAccountByUsername: async (username: string, accountData: Partial<Account>): Promise<Account> => {
+    const response = await axiosClient.post<Account>(
+      `/accounts/manager/create-by-username/${username}`, 
+      accountData
+    );
+    return response.data;
+  },
+  
   // Manager: Change status (Block/Unblock) using query params
   updateStatus: async (id: number, status: string): Promise<Account> => {
     const response = await axiosClient.patch<Account>(
@@ -39,7 +48,14 @@ const accountService = {
       `/accounts/customer/statement/${accountNumber}`
     );
     return response.data;
-  }
+  },
+
+  // NEW: Fetch all accounts belonging to a specific customer
+  getAccountsByUsername: async (username: string): Promise<Account[]> => {
+    // This matches the Spring Boot endpoint: GET /api/accounts/customer/{username}
+    const response = await axiosClient.get<Account[]>(`/accounts/customer/${username}`);
+    return response.data;
+  },
 };
 
 export default accountService;

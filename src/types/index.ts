@@ -20,6 +20,7 @@ export interface Account {
   accountNumber: string;
   balance: number;
   status: 'ACTIVE' | 'BLOCKED' | 'CLOSED';
+  accountType: 'SAVINGS' | 'CURRENT' | 'LOAN'; // Add this field
 }
 
 export interface Transaction {

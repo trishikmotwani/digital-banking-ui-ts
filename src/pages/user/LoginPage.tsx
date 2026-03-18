@@ -2,6 +2,7 @@ import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import userService from '../../services/userService';
 import { UserRole, UserDto } from '../../types';
+import accountService from '../../services/accountService';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -42,6 +43,17 @@ const LoginPage: React.FC = () => {
       if (role === UserRole.ROLE_ADMIN) {
         navigate('/admin/dashboard');
       } else if (role === UserRole.ROLE_USER) {
+        try {
+          // 1. Fetch all accounts for the user (assuming this endpoint exists)
+          const accounts = await accountService.getAccountsByUsername(credentials.username);
+          const savingsAccount = accounts.find(acc => acc.accountType === 'SAVINGS');
+
+          if (savingsAccount) {
+            localStorage.setItem('savingsAccount', savingsAccount.accountNumber);
+          }
+        } catch (accErr) {
+          console.warn("Could not fetch accounts during login", accErr);
+        }
         navigate('/customer/dashboard');
       } else {
         navigate('/dashboard');
