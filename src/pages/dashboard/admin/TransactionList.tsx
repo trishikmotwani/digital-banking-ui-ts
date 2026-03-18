@@ -25,8 +25,8 @@ const TransactionList: React.FC = () => {
 
   // Filter transactions by Account Number or Description
   const filteredData = transactions.filter(tx => 
-    tx.senderAccount?.accountNumber.includes(searchTerm) || 
-    tx.receiverAccount?.accountNumber.includes(searchTerm) ||
+    tx.senderAccountNumber?.includes(searchTerm) || 
+    tx.receiverAccountNumber?.includes(searchTerm) ||
     tx.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -81,8 +81,8 @@ const TransactionList: React.FC = () => {
                       {tx.type}
                     </span>
                   </td>
-                  <td className="small">{tx.senderAccount?.accountNumber || 'External'}</td>
-                  <td className="small">{tx.receiverAccount?.accountNumber || 'External'}</td>
+                  <td className="small">{tx.senderAccountNumber ?? ''}</td>
+                  <td className="small">{tx.receiverAccountNumber ?? ''}</td>
                   <td className={`text-end fw-bold ${tx.type === 'DEPOSIT' ? 'text-success' : 'text-dark'}`}>
                     ${tx.amount.toLocaleString()}
                   </td>

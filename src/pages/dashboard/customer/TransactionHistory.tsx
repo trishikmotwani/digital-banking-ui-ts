@@ -51,7 +51,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ accNo }) => {
           <tbody>
             {logs.length > 0 ? (
               logs.map((tx) => {
-                const isDebit = tx.senderAccount?.accountNumber === accNo;
+                const isDebit = tx.senderAccountNumber === accNo;
                 return (
                   <tr key={tx.id}>
                     <td className="small text-muted">

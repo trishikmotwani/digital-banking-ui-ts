@@ -7,41 +7,52 @@ interface TransactionRequest {
   amount: number;
 }
 
+// Updated to include the OTP field for the confirmation step
 interface TransferRequest {
   fromAccountNumber: string;
   toAccountNumber: string;
   amount: number;
+  otp?: string; 
 }
 
 const transactionService = {
-  // POST: /api/transactions/deposit
+  // 1. DEPOSIT
   deposit: async (accountNumber: string, amount: number): Promise<Transaction> => {
     const payload: TransactionRequest = { accountNumber, amount };
     const response = await axiosClient.post<Transaction>('/transactions/deposit', payload);
     return response.data;
   },
 
-  // POST: /api/transactions/withdraw
+  // 2. WITHDRAW
   withdraw: async (accountNumber: string, amount: number): Promise<Transaction> => {
     const payload: TransactionRequest = { accountNumber, amount };
     const response = await axiosClient.post<Transaction>('/transactions/withdraw', payload);
     return response.data;
   },
 
-  // POST: /api/transactions/transfer
-  transfer: async (fromAccountNumber: string, toAccountNumber: string, amount: number): Promise<Transaction> => {
-    const payload: TransferRequest = { fromAccountNumber, toAccountNumber, amount };
-    const response = await axiosClient.post<Transaction>('/transactions/transfer', payload);
+  // 3. INITIATE TRANSFER (Step 1)
+  // Returns the WhatsApp wa.me link as a string
+  initiateTransfer: async (fromAccountNumber: string): Promise<string> => {
+    const response = await axiosClient.post<string>('/transactions/transfer/initiate', { 
+      fromAccountNumber 
+    });
     return response.data;
   },
 
-  // GET: /api/transactions/history/{accountNumber} (Customer view)
+  // 4. CONFIRM TRANSFER (Step 2)
+  // Sends the OTP along with transfer details
+  confirmTransfer: async (payload: TransferRequest): Promise<Transaction> => {
+    const response = await axiosClient.post<Transaction>('/transactions/transfer/confirm', payload);
+    return response.data;
+  },
+
+  // 5. GET HISTORY (Customer)
   getHistory: async (accountNumber: string): Promise<Transaction[]> => {
     const response = await axiosClient.get<Transaction[]>(`/transactions/history/${accountNumber}`);
     return response.data;
   },
 
-  // GET: /api/transactions/admin/all (Admin/Manager view)
+  // 6. ADMIN VIEW ALL
   adminViewAll: async (): Promise<Transaction[]> => {
     const response = await axiosClient.get<Transaction[]>('/transactions/admin/all');
     return response.data;

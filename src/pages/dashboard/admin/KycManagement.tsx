@@ -5,7 +5,11 @@ import customerService, { Customer } from '../../../services/customerService';
  * KycManagement handles the administrative workflow for 
  * verifying customer identities (KYC).
  */
-const KycManagement: React.FC = () => {
+
+export interface KycManagementProps {
+  onKycSuccess: any;
+}
+const KycManagement: React.FC<KycManagementProps> = (props) => {
   const [pendingCustomers, setPendingCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -34,6 +38,7 @@ const KycManagement: React.FC = () => {
       alert("KYC Verified Successfully!");
       // Refresh the local list
       fetchPendingKyc();
+      props.onKycSuccess();
     } catch (err) {
       alert("Verification failed. Please try again.");
     }

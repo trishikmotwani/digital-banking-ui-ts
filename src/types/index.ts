@@ -23,14 +23,25 @@ export interface Account {
   accountType: 'SAVINGS' | 'CURRENT' | 'LOAN'; // Add this field
 }
 
+// export interface Transaction {
+//   id: string;
+//   amount: number;
+//   description: string;
+//   type: 'TRANSFER' | 'DEPOSIT' | 'WITHDRAWAL' | 'BILL_PAYMENT';
+//   createdAt: string;
+//   senderAccount?: Account;
+//   receiverAccount?: Account;
+// }
+
+// in types.ts or wherever Transaction is defined
 export interface Transaction {
   id: string;
   amount: number;
   description: string;
-  type: 'TRANSFER' | 'DEPOSIT' | 'WITHDRAWAL' | 'BILL_PAYMENT';
+  type: 'TRANSFER' | 'DEPOSIT' | 'WITHDRAW';
+  senderAccountNumber: string;   // Flat string now
+  receiverAccountNumber: string; // Flat string now
   createdAt: string;
-  senderAccount?: Account;
-  receiverAccount?: Account;
 }
 
 export interface Customer {
